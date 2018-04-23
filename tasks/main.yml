@@ -1,0 +1,27 @@
+- name: download SonarQube
+  get_url: url=https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-6.7.3.zip dest=/root/sonarqube-6.7.3.zip
+
+- name: unpack SonarQube
+  unarchive: copy=no src=/root/sonarqube-6.7.3.zip dest=/opt
+
+- name: create sonarqube user
+  user: name=sonarqube
+
+- name: chown /opt/sonarqube-6.7.3
+  file: state=directory dest=/opt/sonarqube-6.7.3 owner=sonarqube recurse=yes
+
+- name: set vm.max_map_count sysctl
+  sysctl: name=vm.max_map_count value=262144
+
+- name: set fs.file-max sysctl
+  sysctl: name=fs.file-max value=65536
+
+- name: put /opt/sonarqube-6.7.3/conf/sonar.properties
+  template: src=sonar.properties dest=/opt/sonarqube-6.7.3/conf/sonar.properties
+
+- name: put systemd unit file
+  template: src=sonarqube.service dest=/etc/systemd/system/sonarqube.service backup=yes
+  notify: systemctl daemon-reload
+
+- name: enable sonarqube service
+  service: name=sonarqube state=started enabled=yes

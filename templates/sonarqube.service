@@ -1,0 +1,12 @@
+[Unit]
+Description=SonarQube service
+
+[Service]
+LimitNOFILE=65536
+LimitNPROC=2048
+User=sonarqube
+Type=simple
+ExecStart=/opt/sonarqube-6.7.3/bin/linux-x86-64/sonar.sh start
+
+[Install]
+WantedBy=multi-user.target
